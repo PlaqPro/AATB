@@ -56,7 +56,7 @@ const formStatus = document.getElementById("formStatus");
 const submitButton = document.getElementById("button");
 const emailConfig = {
   publicKey: "Npc5XujGi641GA81m",
-  serviceId: "service_h1yah0h",
+  serviceId: "service_x6q06ze",
   templateId: "template_c7ld5fc",
 };
 
