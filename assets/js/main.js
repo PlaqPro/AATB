@@ -40,18 +40,22 @@ const emailConfig = {
   templateId: "template_c7ld5fc",
 };
 
-if (window.emailjs) {
-  window.emailjs.init({ publicKey: emailConfig.publicKey });
-}
-
 if (contactForm && formStatus) {
   contactForm.addEventListener("submit", async (event) => {
-    if (!window.emailjs) {
-      return;
-    }
-
     event.preventDefault();
     const submitButton = contactForm.querySelector("button[type='submit']");
+    const formData = new FormData(contactForm);
+    const payload = {
+      service_id: emailConfig.serviceId,
+      template_id: emailConfig.templateId,
+      user_id: emailConfig.publicKey,
+      template_params: {
+        nom: formData.get("nom") || "",
+        email: formData.get("email") || "",
+        telephone: formData.get("telephone") || "",
+        message: formData.get("message") || "",
+      },
+    };
 
     formStatus.className = "form-status";
     formStatus.textContent = "Envoi de votre demande...";
@@ -61,11 +65,17 @@ if (contactForm && formStatus) {
     }
 
     try {
-      await window.emailjs.sendForm(
-        emailConfig.serviceId,
-        emailConfig.templateId,
-        contactForm,
-      );
+      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`EmailJS error ${response.status}`);
+      }
 
       contactForm.reset();
       formStatus.className = "form-status success";
