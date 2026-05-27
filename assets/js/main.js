@@ -74,22 +74,44 @@ if (contactForm && formStatus && submitButton) {
     submitButton.textContent = "Envoi en cours...";
 
     try {
-      if (!window.emailjs) {
-        throw new Error("EmailJS unavailable");
-      }
+      if (window.emailjs) {
+        await window.emailjs.sendForm(
+          emailConfig.serviceId,
+          emailConfig.templateId,
+          contactForm,
+        );
+      } else {
+        const formData = new FormData(contactForm);
+        const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            service_id: emailConfig.serviceId,
+            template_id: emailConfig.templateId,
+            user_id: emailConfig.publicKey,
+            template_params: {
+              nom: formData.get("nom") || "",
+              email: formData.get("email") || "",
+              telephone: formData.get("telephone") || "",
+              message: formData.get("message") || "",
+            },
+          }),
+        });
 
-      await window.emailjs.sendForm(
-        emailConfig.serviceId,
-        emailConfig.templateId,
-        contactForm,
-      );
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`${response.status} ${errorText}`);
+        }
+      }
 
       contactForm.reset();
       formStatus.className = "form-status success";
       formStatus.textContent = "Votre demande a bien été envoyée.";
     } catch (error) {
       formStatus.className = "form-status error";
-      formStatus.textContent = "L'envoi a échoué. Vous pouvez écrire à aatb@aa-tb.fr.";
+      formStatus.textContent = `L'envoi a échoué (${error.text || error.message || "erreur inconnue"}). Vous pouvez écrire à aatb@aa-tb.fr.`;
     } finally {
       submitButton.disabled = false;
       submitButton.textContent = "Envoyer la demande";
