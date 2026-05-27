@@ -84,25 +84,16 @@ textarea {
 }
 
 .brand {
-  color: white;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  width: min(220px, 42vw);
 }
 
-.brand strong {
-  display: block;
-  font-size: 1.8rem;
-  font-weight: 900;
-  letter-spacing: 3px;
-}
-
-.brand span {
-  display: block;
-  margin-top: 8px;
-  color: var(--gold-strong);
-  font-size: 0.66rem;
-  letter-spacing: 2.2px;
-  line-height: 1.35;
-  text-transform: uppercase;
+.brand img {
+  width: 100%;
+  height: auto;
+  max-height: 62px;
+  object-fit: contain;
 }
 
 nav {
@@ -733,6 +724,12 @@ button:hover {
   letter-spacing: 2px;
 }
 
+.footer-logo {
+  width: min(230px, 100%);
+  height: auto;
+  margin-bottom: 16px;
+}
+
 .footer p,
 .footer a {
   font-size: 0.95rem;
@@ -981,7 +978,6 @@ button:hover {
     width: min(100% - 28px, 1240px);
   }
 
-  .brand span,
   .hero-proof {
     display: none;
   }
