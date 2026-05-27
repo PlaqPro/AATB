@@ -273,7 +273,7 @@
           </p>
         </div>
 
-        <form id="contactForm" action="mailto:aatb@aa-tb.fr" method="post" enctype="text/plain">
+        <form id="form" action="mailto:aatb@aa-tb.fr" method="post" enctype="text/plain">
           <label>
             <span>Nom</span>
             <input type="text" name="nom" autocomplete="name" required>
@@ -290,7 +290,7 @@
             <span>Projet</span>
             <textarea name="message" placeholder="Type de travaux, surface, commune, délai souhaité" required></textarea>
           </label>
-          <button type="submit">Envoyer la demande</button>
+          <button id="button" type="submit">Envoyer la demande</button>
           <p class="form-status" id="formStatus" aria-live="polite"></p>
         </form>
       </div>
@@ -341,6 +341,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
 </html>

@@ -51,50 +51,38 @@ if (reject) {
   reject.addEventListener("click", () => closeCookieBanner("rejected"));
 }
 
-const contactForm = document.getElementById("contactForm");
+const contactForm = document.getElementById("form");
 const formStatus = document.getElementById("formStatus");
+const submitButton = document.getElementById("button");
 const emailConfig = {
   publicKey: "Npc5XujGi641GA81m",
   serviceId: "service_h1yah0h",
   templateId: "template_c7ld5fc",
 };
 
-if (contactForm && formStatus) {
+if (window.emailjs) {
+  window.emailjs.init({ publicKey: emailConfig.publicKey });
+}
+
+if (contactForm && formStatus && submitButton) {
   contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const submitButton = contactForm.querySelector("button[type='submit']");
-    const formData = new FormData(contactForm);
-    const payload = {
-      service_id: emailConfig.serviceId,
-      template_id: emailConfig.templateId,
-      user_id: emailConfig.publicKey,
-      template_params: {
-        nom: formData.get("nom") || "",
-        email: formData.get("email") || "",
-        telephone: formData.get("telephone") || "",
-        message: formData.get("message") || "",
-      },
-    };
 
     formStatus.className = "form-status";
     formStatus.textContent = "Envoi de votre demande...";
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.textContent = "Envoi en cours...";
-    }
+    submitButton.disabled = true;
+    submitButton.textContent = "Envoi en cours...";
 
     try {
-      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`EmailJS error ${response.status}`);
+      if (!window.emailjs) {
+        throw new Error("EmailJS unavailable");
       }
+
+      await window.emailjs.sendForm(
+        emailConfig.serviceId,
+        emailConfig.templateId,
+        contactForm,
+      );
 
       contactForm.reset();
       formStatus.className = "form-status success";
@@ -103,10 +91,8 @@ if (contactForm && formStatus) {
       formStatus.className = "form-status error";
       formStatus.textContent = "L'envoi a échoué. Vous pouvez écrire à aatb@aa-tb.fr.";
     } finally {
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = "Envoyer la demande";
-      }
+      submitButton.disabled = false;
+      submitButton.textContent = "Envoyer la demande";
     }
   });
 }
