@@ -457,7 +457,7 @@ h1 {
 
 .gallery-card::after {
   inset: 0;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.08));
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.18) 44%, rgba(0, 0, 0, 0.02) 100%);
 }
 
 .service-card div,
@@ -600,7 +600,7 @@ h1 {
 }
 
 .gallery-card:hover img {
-  opacity: 0.78;
+  opacity: 0.92;
 }
 
 .cta {
