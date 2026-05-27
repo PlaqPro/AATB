@@ -8,6 +8,25 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 
+const navToggle = document.querySelector(".nav-toggle");
+const mainNav = document.getElementById("mainNav");
+
+if (navToggle && mainNav) {
+  navToggle.addEventListener("click", () => {
+    const isOpen = mainNav.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", String(isOpen));
+    navToggle.setAttribute("aria-label", isOpen ? "Fermer le menu" : "Ouvrir le menu");
+  });
+
+  mainNav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      mainNav.classList.remove("open");
+      navToggle.setAttribute("aria-expanded", "false");
+      navToggle.setAttribute("aria-label", "Ouvrir le menu");
+    });
+  });
+}
+
 const banner = document.getElementById("cookieBanner");
 const accept = document.getElementById("cookieAccept");
 const reject = document.getElementById("cookieReject");
