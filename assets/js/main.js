@@ -64,16 +64,62 @@ if (window.emailjs) {
   window.emailjs.init({ publicKey: emailConfig.publicKey });
 }
 
+function getFormValue(formData, name) {
+  return (formData.get(name) || "").toString().trim();
+}
+
+function buildProjectMessage(formData) {
+  const rows = [
+    ["Type de projet", getFormValue(formData, "type_projet")],
+    ["Commune du chantier", getFormValue(formData, "commune")],
+    ["Surface estimee", getFormValue(formData, "surface")],
+    ["Delai souhaite", getFormValue(formData, "delai")],
+    ["Preference de contact", getFormValue(formData, "preference_contact")],
+    ["Details", getFormValue(formData, "message")],
+  ];
+
+  return rows
+    .filter(([, value]) => value)
+    .map(([label, value]) => `${label} : ${value}`)
+    .join("\n");
+}
+
 function syncEmailTemplateAliases(form) {
   const formData = new FormData(form);
+  const projectMessage = buildProjectMessage(formData);
+  const name = getFormValue(formData, "nom");
+  const email = getFormValue(formData, "email");
+  const phone = getFormValue(formData, "telephone");
   const aliases = {
-    name: formData.get("nom") || "",
-    from_name: formData.get("nom") || "",
-    user_email: formData.get("email") || "",
-    from_email: formData.get("email") || "",
-    phone: formData.get("telephone") || "",
-    project: formData.get("message") || "",
+    name,
+    nom: name,
+    from_name: name,
+    user_name: name,
+    email,
+    user_email: email,
+    from_email: email,
+    reply_to: email,
+    telephone: phone,
+    phone,
+    phone_number: phone,
+    project_type: getFormValue(formData, "type_projet"),
+    type_projet: getFormValue(formData, "type_projet"),
+    city: getFormValue(formData, "commune"),
+    commune: getFormValue(formData, "commune"),
+    surface: getFormValue(formData, "surface"),
+    deadline: getFormValue(formData, "delai"),
+    delai: getFormValue(formData, "delai"),
+    contact_preference: getFormValue(formData, "preference_contact"),
+    preference_contact: getFormValue(formData, "preference_contact"),
+    details: getFormValue(formData, "message"),
+    project: projectMessage,
+    project_message: projectMessage,
+    demande: projectMessage,
+    message_full: projectMessage,
+    full_message: projectMessage,
     to_email: "aatb@aa-tb.fr",
+    recipient_email: "aatb@aa-tb.fr",
+    subject: "Nouvelle demande depuis le site AATB",
   };
 
   Object.entries(aliases).forEach(([name, value]) => {
@@ -96,9 +142,16 @@ if (contactForm && formStatus && submitButton) {
     formStatus.textContent = "Envoi de votre demande...";
     submitButton.disabled = true;
     submitButton.textContent = "Envoi en cours...";
+    const messageField = contactForm.elements.message;
+    const initialMessage = messageField ? messageField.value : "";
+    let sent = false;
 
     try {
       syncEmailTemplateAliases(contactForm);
+
+      if (messageField) {
+        messageField.value = buildProjectMessage(new FormData(contactForm));
+      }
 
       if (window.emailjs) {
         await window.emailjs.sendForm(
@@ -118,10 +171,35 @@ if (contactForm && formStatus && submitButton) {
             template_id: emailConfig.templateId,
             user_id: emailConfig.publicKey,
             template_params: {
-              nom: formData.get("nom") || "",
-              email: formData.get("email") || "",
-              telephone: formData.get("telephone") || "",
-              message: formData.get("message") || "",
+              nom: getFormValue(formData, "nom"),
+              name: getFormValue(formData, "nom"),
+              from_name: getFormValue(formData, "nom"),
+              email: getFormValue(formData, "email"),
+              user_email: getFormValue(formData, "email"),
+              from_email: getFormValue(formData, "email"),
+              reply_to: getFormValue(formData, "email"),
+              telephone: getFormValue(formData, "telephone"),
+              phone: getFormValue(formData, "telephone"),
+              phone_number: getFormValue(formData, "telephone"),
+              type_projet: getFormValue(formData, "type_projet"),
+              project_type: getFormValue(formData, "type_projet"),
+              commune: getFormValue(formData, "commune"),
+              city: getFormValue(formData, "commune"),
+              surface: getFormValue(formData, "surface"),
+              delai: getFormValue(formData, "delai"),
+              deadline: getFormValue(formData, "delai"),
+              preference_contact: getFormValue(formData, "preference_contact"),
+              contact_preference: getFormValue(formData, "preference_contact"),
+              message: getFormValue(formData, "message"),
+              details: getFormValue(formData, "message"),
+              project: getFormValue(formData, "message"),
+              project_message: getFormValue(formData, "message"),
+              demande: getFormValue(formData, "message"),
+              message_full: getFormValue(formData, "message"),
+              full_message: getFormValue(formData, "message"),
+              to_email: "aatb@aa-tb.fr",
+              recipient_email: "aatb@aa-tb.fr",
+              subject: "Nouvelle demande depuis le site AATB",
             },
           }),
         });
@@ -132,6 +210,7 @@ if (contactForm && formStatus && submitButton) {
         }
       }
 
+      sent = true;
       contactForm.reset();
       formStatus.className = "form-status success";
       formStatus.textContent = "Votre demande a bien été envoyée.";
@@ -139,6 +218,9 @@ if (contactForm && formStatus && submitButton) {
       formStatus.className = "form-status error";
       formStatus.textContent = `L'envoi a échoué (${error.text || error.message || "erreur inconnue"}). Vous pouvez écrire à aatb@aa-tb.fr.`;
     } finally {
+      if (!sent && messageField) {
+        messageField.value = initialMessage;
+      }
       submitButton.disabled = false;
       submitButton.textContent = "Envoyer la demande";
     }

@@ -285,9 +285,51 @@
             <span>Téléphone</span>
             <input type="tel" name="telephone" autocomplete="tel">
           </label>
+          <div class="form-row">
+            <label>
+              <span>Type de projet</span>
+              <select name="type_projet" required>
+                <option value="">Sélectionner</option>
+                <option>Placo / cloison</option>
+                <option>Faux plafond</option>
+                <option>Peinture / finitions</option>
+                <option>Rénovation intérieure</option>
+                <option>Aménagement professionnel</option>
+                <option>Autre demande</option>
+              </select>
+            </label>
+            <label>
+              <span>Commune du chantier</span>
+              <input type="text" name="commune" autocomplete="address-level2" placeholder="Ville ou secteur" required>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              <span>Surface estimée</span>
+              <input type="text" name="surface" inputmode="decimal" placeholder="Ex. 35 m²">
+            </label>
+            <label>
+              <span>Délai souhaité</span>
+              <select name="delai">
+                <option value="">À préciser</option>
+                <option>Dès que possible</option>
+                <option>Sous 1 mois</option>
+                <option>1 à 3 mois</option>
+                <option>Plus tard / à planifier</option>
+              </select>
+            </label>
+          </div>
           <label>
-            <span>Projet</span>
-            <textarea name="message" placeholder="Type de travaux, surface, commune, délai souhaité" required></textarea>
+            <span>Préférence de contact</span>
+            <select name="preference_contact">
+              <option>Peu importe</option>
+              <option>Rappel téléphonique</option>
+              <option>Réponse par email</option>
+            </select>
+          </label>
+          <label>
+            <span>Détails du projet</span>
+            <textarea name="message" placeholder="Décrivez les travaux, l'état actuel, les contraintes ou toute information utile." required></textarea>
           </label>
           <button id="button" type="submit">Envoyer la demande</button>
           <p class="form-status" id="formStatus" aria-live="polite"></p>
