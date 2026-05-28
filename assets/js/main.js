@@ -64,6 +64,30 @@ if (window.emailjs) {
   window.emailjs.init({ publicKey: emailConfig.publicKey });
 }
 
+function syncEmailTemplateAliases(form) {
+  const formData = new FormData(form);
+  const aliases = {
+    name: formData.get("nom") || "",
+    from_name: formData.get("nom") || "",
+    user_email: formData.get("email") || "",
+    from_email: formData.get("email") || "",
+    phone: formData.get("telephone") || "",
+    project: formData.get("message") || "",
+    to_email: "aatb@aa-tb.fr",
+  };
+
+  Object.entries(aliases).forEach(([name, value]) => {
+    let input = form.querySelector(`input[name="${name}"]`);
+    if (!input) {
+      input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      form.appendChild(input);
+    }
+    input.value = value;
+  });
+}
+
 if (contactForm && formStatus && submitButton) {
   contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -74,6 +98,8 @@ if (contactForm && formStatus && submitButton) {
     submitButton.textContent = "Envoi en cours...";
 
     try {
+      syncEmailTemplateAliases(contactForm);
+
       if (window.emailjs) {
         await window.emailjs.sendForm(
           emailConfig.serviceId,
